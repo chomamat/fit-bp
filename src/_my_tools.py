@@ -1,4 +1,5 @@
 import cv2 as cv
+import matplotlib.pyplot as plt
 import numpy as np
 
 def showImg(name,*img,folder=None):
@@ -15,6 +16,21 @@ def showImg(name,*img,folder=None):
     cv.imshow(name,res)
     cv.waitKey(0)
     cv.destroyAllWindows()
+    if folder is not None:
+        res = (res * 255).astype('int')
+        cv.imwrite(folder+name+".png",res)
+
+def showImgGC(name,*img,folder=None):
+    if len(img) == 0:
+        return
+    else:
+        res = img[0]
+        for i in img[1:]:
+            res = np.concatenate((res,i),axis=1)
+            
+    fig, ax = plt.subplots(figsize=(30,30))
+    ax.grid(False)
+    ax.imshow(res.squeeze(), cmap='binary_r')
     if folder is not None:
         res = (res * 255).astype('int')
         cv.imwrite(folder+name+".png",res)
