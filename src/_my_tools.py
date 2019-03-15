@@ -17,7 +17,7 @@ def showImg(name,*img,folder=None):
     cv.waitKey(0)
     cv.destroyAllWindows()
     if folder is not None:
-        res = (res * 255).astype('int')
+        # res = (res * 255).astype('int')
         cv.imwrite(folder+name+".png",res)
 
 def showImgGC(name,*img,folder=None):
