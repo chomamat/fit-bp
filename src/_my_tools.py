@@ -3,60 +3,85 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def showImg(name,*img,folder=None):
-    if len(img) == 0:
-        return
-    else:
-        res = img[0]
-        for i in img[1:]:
-            res = np.concatenate((res,i),axis=1)
-            
-    
-    win = cv.namedWindow(name,cv.WINDOW_NORMAL)
-    cv.resizeWindow(name, 1700,900)
-    cv.imshow(name,res)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    if folder is not None:
-        # res = (res * 255).astype('int')
-        cv.imwrite(folder+name+".png",res)
+	if len(img) == 0:
+		return
+	else:
+		res = img[0]
+		for i in img[1:]:
+			res = np.concatenate((res,i),axis=1)
+			
+	
+	win = cv.namedWindow(name,cv.WINDOW_NORMAL)
+	cv.resizeWindow(name, 1700,900)
+	cv.imshow(name,res)
+	cv.waitKey(0)
+	cv.destroyAllWindows()
+	if folder is not None:
+		# res = (res * 255).astype('int')
+		cv.imwrite(folder+name+".png",res)
 
 def showImgGC(name,*img,folder=None):
-    if len(img) == 0:
-        return
-    else:
-        res = img[0]
-        for i in img[1:]:
-            res = np.concatenate((res,i),axis=1)
-            
-    fig, ax = plt.subplots(figsize=(30,30))
-    ax.grid(False)
-    ax.imshow(res.squeeze(), cmap='binary_r')
-    if folder is not None:
-        res = (res * 255).astype('int')
-        cv.imwrite(folder+name+".png",res)
+	if len(img) == 0:
+		return
+	else:
+		res = img[0]
+		for i in img[1:]:
+			res = np.concatenate((res,i),axis=1)
+			
+	fig, ax = plt.subplots(figsize=(30,30))
+	ax.grid(False)
+	ax.imshow(res.squeeze(), cmap='binary_r')
+	if folder is not None:
+		res = (res * 255).astype('int')
+		cv.imwrite(folder+name+".png",res)
 
-def loadData(folder):
-    X_train = np.load(folder+"X_train.npy")
-    y_train = np.load(folder+"y_train.npy")
-    X_test = np.load(folder+"X_test.npy")
-    y_test = np.load(folder+"y_test.npy")
+def compare(i,X,y,res,folder=None):
+	showImgGC(str(i).zfill(2),X[i,:,:,0],y[i,:,:,0],res[i,:,:,0],X[i,:,:,1],folder=folder)
 
-    return X_train, y_train, X_test, y_test
+def loadData(folder, typeF=None):
+	X_train = np.load(folder+"X_train.npy")
+	y_train = np.load(folder+"y_train.npy")
+	X_test = np.load(folder+"X_test.npy")
+	y_test = np.load(folder+"y_test.npy")
+
+	if typeF is not None:
+		X_train = X_train.astype(typeF)
+		y_train = y_train.astype(typeF)
+		X_test = X_test.astype(typeF)
+		y_test = y_test.astype(typeF)
+		X_train /= 255
+		y_train /= 255
+		X_test /= 255
+		y_test /= 255
+
+	return X_train, y_train, X_test, y_test
 
 def loadDataFloat(folder):
-    X_train, y_train, X_test, y_test = loadData(folder)
-    X_train = X_train.astype('float32')
-    y_train = y_train.astype('float32')
-    X_test = X_test.astype('float32')
-    y_test = y_test.astype('float32')
-    X_train /= 255
-    y_train /= 255
-    X_test /= 255
-    y_test /= 255
+	print("This is legacy function, replace it please.")
+	X_train, y_train, X_test, y_test = loadData(folder)
+	X_train = X_train.astype('float32')
+	y_train = y_train.astype('float32')
+	X_test = X_test.astype('float32')
+	y_test = y_test.astype('float32')
+	X_train /= 255
+	y_train /= 255
+	X_test /= 255
+	y_test /= 255
 
-    return X_train, y_train, X_test, y_test
+	return X_train, y_train, X_test, y_test
+
+def postProcess(X, channels, bound=1):
+	c = channels - 1
+	if bound != 1:
+		tmp = (X / bound) * c * 2
+		res = ( (np.floor(tmp) + np.ceil(tmp)) // 3 ) / c
+		res = (res * bound).astype(int)		
+	else:
+		tmp = X * c * 2
+		res = ( (np.floor(tmp) + np.ceil(tmp)) // 3 ) / c
+	return res
 
 def splitX(X):
-    X_1 = np.squeeze(X[:,0,:,:])
-    X_2 = np.squeeze(X[:,1,:,:])
-    return X_1, X_2
+	X_1 = np.squeeze(X[:,0,:,:])
+	X_2 = np.squeeze(X[:,1,:,:])
+	return X_1, X_2
