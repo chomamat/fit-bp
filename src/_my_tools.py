@@ -38,7 +38,7 @@ def showImgGC(name,*img,folder=None):
 def compare(i,X,y,res,folder=None):
 	showImgGC(str(i).zfill(2),X[i,:,:,0],y[i,:,:,0],res[i,:,:,0],X[i,:,:,1],folder=folder)
 
-def loadData(folder, typeF=None):
+def loadData(folder, typeF=None, channels_last=False):
 	X_train = np.load(folder+"X_train.npy")
 	y_train = np.load(folder+"y_train.npy")
 	X_test = np.load(folder+"X_test.npy")
@@ -53,6 +53,15 @@ def loadData(folder, typeF=None):
 		y_train /= 255
 		X_test /= 255
 		y_test /= 255
+
+	if channels_last is True:
+		X_train = X_train.swapaxes(1,3)
+		X_train = X_train.swapaxes(1,2)
+		X_test = X_test.swapaxes(1,3)
+		X_test = X_test.swapaxes(1,2)
+
+		y_train = np.expand_dims(y_train,3)
+		y_test = np.expand_dims(y_test,3)
 
 	return X_train, y_train, X_test, y_test
 
