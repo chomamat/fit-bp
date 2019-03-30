@@ -62,6 +62,9 @@ def loadData(folder, typeF=None, channels_last=False):
 
 		y_train = np.expand_dims(y_train,3)
 		y_test = np.expand_dims(y_test,3)
+	else:
+		y_train = np.expand_dims(y_train, 1)
+		y_test = np.expand_dims(y_test, 1)
 
 	return X_train, y_train, X_test, y_test
 
