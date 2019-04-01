@@ -35,8 +35,11 @@ def showImgGC(name,*img,folder=None):
 		res = (res * 255).astype('int')
 		cv.imwrite(folder+name+".png",res)
 
-def compare(i,X,y,res,folder=None):
-	showImgGC(str(i).zfill(2),X[i,:,:,0],y[i,:,:,0],res[i,:,:,0],X[i,:,:,1],folder=folder)
+def compare(i,X,y,res,folder=None, channels_last=True):
+	if channels_last is True:
+		showImgGC(str(i).zfill(2),X[i,:,:,0],y[i,:,:,0],res[i,:,:,0],X[i,:,:,1],folder=folder)
+	else:
+		showImgGC(str(i).zfill(2),X[i,0,:,:],y[i,0,:,:],res[i,0,:,:],X[i,1,:,:],folder=folder)
 
 def loadData(folder, typeF=None, channels_last=False):
 	X_train = np.load(folder+"X_train.npy")
