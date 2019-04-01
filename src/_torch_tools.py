@@ -5,7 +5,7 @@ from torchsummary import summary
 import numpy as np
 import time
 
-class Train():
+class Training():
 	def __init__(self, model, device, X, y, X_val=None, y_val=None,
 		loss_function=None, optimizer=None):
 
@@ -31,7 +31,7 @@ class Train():
 
 		self.optimizer = optimizer 		# improve -> pass optim to class and initialize inside
 		if self.optimizer is None:
-			self.optimizer = optim.Adamax(model.parameters(), lr=learning_rate)
+			self.optimizer = optim.Adamax(model.parameters())
 
 	# Returns batch as pytorch tensor on device.
 	def getBatch(self, offset, batch_size, val=False):
@@ -50,7 +50,7 @@ class Train():
 		)
 		return input.to(self.device), target.to(self.device)
 
-	def fit(batch_size, n_epochs, val=False):
+	def fit(self, batch_size, n_epochs, val=False):
 		
 		#Print all of the hyperparameters of the training iteration:
 		print("====== HYPERPARAMETERS ======")
@@ -93,15 +93,15 @@ class Train():
 				
 			epoch_loss /= n_batch
 			self.history['train'].append(epoch_loss)
-			print("\nEpoch[{}] finished in {} with loss {}".format(epoch, formatTime(tick_T - epoch_T), epoch_loss))
+			print("\nEpoch[{}] finished in {} with loss {}".format(epoch, self.formatTime(tick_T - epoch_T), epoch_loss))
 			
 			if val is True:
-				self.history['val'].append( validate(batch_size) )
+				self.history['val'].append( self.validate(batch_size) )
 			
 			print("\n----------------------------\n")
-		print("Finished training of {} epochs in {}.".format(n_epochs, formatTime(int(time.time())-start_T)))
+		print("Finished training of {} epochs in {}.".format(n_epochs, self.formatTime(int(time.time())-start_T)))
 			
-		return history
+		return self.history
 
 	def validate(self, train_batch_size):
 		if self.X_val is None:
@@ -141,7 +141,7 @@ class Train():
 
 	# Takes t as number of seconds, returns formatted string as HH:MM:SS
 	@staticmethod
-    def formatTime(t):
+	def formatTime(t):
 		t = int(t)
 		s = t % 60
 		m = (t // 60) % 60
