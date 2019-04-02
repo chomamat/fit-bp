@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-import _my_tools as mt
+import tools._my_tools as mt
 
 # If tuple is passed, returns it unchanged.
 # If int is passed, returns a tuple of two such ints.
