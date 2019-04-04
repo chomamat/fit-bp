@@ -33,6 +33,9 @@ class Training():
 		if self.optimizer is None:
 			self.optimizer = optim.Adamax(model.parameters())
 
+		# Load model on GPU
+		self.model.to(self.device)
+
 	# Returns batch as pytorch tensor on device.
 	def getBatch(self, offset, batch_size, val=False):
 		if val is True:
@@ -61,8 +64,6 @@ class Training():
 		print("device :",self.device)
 		print("=" * 29)
 		
-		self.model.to(self.device)
-
 		n_batch = self.X.shape[0] // batch_size
 		
 		start_T = int(time.time())
@@ -96,31 +97,41 @@ class Training():
 			print("\nEpoch[{}] finished in {} with loss {}".format(epoch, self.formatTime(tick_T - epoch_T), epoch_loss))
 			
 			if val is True:
-				self.history['val'].append( self.validate(batch_size) )
+				self.validate(batch_size)
 			
 			print("\n----------------------------\n")
 		print("Finished training of {} epochs in {}.".format(n_epochs, self.formatTime(int(time.time())-start_T)))
 			
 		return self.history
 
-	def validate(self, train_batch_size):
+	def validate(self, batch_size):
 		if self.X_val is None:
 			print("Cannot validate, no validation dataset given.")
 			return None
 
 		loss_val = 0
-		n_batch_val = self.X_val.shape[0] // train_batch_size
+		n_batch_val = self.X_val.shape[0] // batch_size
 
-		print("Validating on {} samples.".format(n_batch_val * train_batch_size))
+		print("Validating on {} samples.".format(n_batch_val * batch_size))
 
+		start_T = int(time.time())
 		for it in range(n_batch_val):
-			input, target = self.getBatch(it*train_batch_size, train_batch_size, val=True)
+			input, target = self.getBatch(it*batch_size, batch_size, val=True)
 
 			output = self.model(input)
 			loss = self.loss_function(output, target)
 			loss_val += loss.item()
 
+			tick_T = time.time()
+			print("\r", end='')
+			print("===> Validating ({}/{}):\tETA {}\tValidation Loss: {:.4f}"
+					  .format(it + 1, n_batch_val,
+					  self.formatTime((tick_T - start_T) / (it + 1) * (n_batch_val - it + 1)),
+					  loss_val / (it+1)), end='', flush=True)
+
 		print("Validation loss = {:.4f}".format(loss_val / n_batch_val))
+		self.history['val'].append( loss_val / n_batch_val )
+
 		return loss_val / n_batch_val
 
 	def setTrain(self, X, y):
