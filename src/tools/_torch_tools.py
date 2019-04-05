@@ -94,6 +94,7 @@ class Training():
 				
 			epoch_loss /= n_batch
 			self.history['train'].append(epoch_loss)
+			torch.save(self.model.state_dict(), "weights"+str(epoch))
 			print("\nEpoch[{}] finished in {} with loss {}".format(epoch, self.formatTime(tick_T - epoch_T), epoch_loss))
 			
 			if val is True:
@@ -129,7 +130,7 @@ class Training():
 					  self.formatTime((tick_T - start_T) / (it + 1) * (n_batch_val - it + 1)),
 					  loss_val / (it+1)), end='', flush=True)
 
-		print("Validation loss = {:.4f}".format(loss_val / n_batch_val))
+		print("\nValidation loss = {:.4f}".format(loss_val / n_batch_val))
 		self.history['val'].append( loss_val / n_batch_val )
 
 		return loss_val / n_batch_val
