@@ -68,7 +68,7 @@ class Training():
 		
 		start_T = int(time.time())
 		
-		for epoch in range(n_epochs):
+		for epoch in range(1,n_epochs+1):
 			print("===> Epoch[{}]".format(epoch), end='', flush=True)
 			epoch_T = time.time()
 			epoch_loss = 0
@@ -78,7 +78,11 @@ class Training():
 				self.optimizer.zero_grad()
 				
 				output = self.model(input)
-				loss = self.loss_function(output, target)
+
+				O = torch.cat((output,output,output),1).to(self.device)
+				T = torch.cat((target,target,target),1).to(self.device)
+
+				loss = self.loss_function(O, T)
 				loss.backward()
 				self.optimizer.step()
 				
