@@ -8,6 +8,8 @@ import torch.nn as nn
 
 # Device for running computations
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# Not computing gradients for better computationl performance
+torch.set_grad_enabled(False)
 
 # Parse script arguments
 arg_weights = "model_cl_2e-5.pytorch"
@@ -132,6 +134,12 @@ assert img1.shape == img2.shape == (96,96)
 img1 = img1.reshape((1,1,96,96))
 img2 = img2.reshape((1,1,96,96))
 
-print(img1.shape)
+tensor_in = torch.tensor( np.concatenate((img1,img2),axis=1) )
+tensor_out = model(tensor_in)
+
+img_out = (tensor_out[0,0].cpu().detach().numpy() * 255).astype('int')
+cv.imwrite(arg_out, img_out)
+
+# print(tensor_out.shape)
 
 # input_tensor = torch.cat
