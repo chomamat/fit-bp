@@ -124,8 +124,10 @@ class Model(nn.Module):
 
 #######################################
 
+# Create model for interpolation
 model = Model(arg_weights).to(device).eval()
 
+# Read input images and check dimensions
 img1 = cv.imread(arg_frame1, cv.IMREAD_GRAYSCALE).astype('float32') / 255.
 img2 = cv.imread(arg_frame2, cv.IMREAD_GRAYSCALE).astype('float32') / 255.
 
@@ -134,12 +136,10 @@ assert img1.shape == img2.shape == (96,96)
 img1 = img1.reshape((1,1,96,96))
 img2 = img2.reshape((1,1,96,96))
 
+# Create input tensor and compute output tensor
 tensor_in = torch.tensor( np.concatenate((img1,img2),axis=1) )
 tensor_out = model(tensor_in)
 
+# Save output image from the output tensor
 img_out = (tensor_out[0,0].cpu().detach().numpy() * 255).astype('int')
 cv.imwrite(arg_out, img_out)
-
-# print(tensor_out.shape)
-
-# input_tensor = torch.cat
