@@ -129,10 +129,11 @@ def interpolate(arg_frame1, arg_frame2, arg_out):
     img1 = cv.imread(arg_frame1, cv.IMREAD_GRAYSCALE).astype('float32') / 255.
     img2 = cv.imread(arg_frame2, cv.IMREAD_GRAYSCALE).astype('float32') / 255.
 
-    assert img1.shape == img2.shape == (96,96)
+    assert img1.shape == img2.shape
+    shape = img1.shape
 
-    img1 = img1.reshape((1,1,96,96))
-    img2 = img2.reshape((1,1,96,96))
+    img1 = img1.reshape((1,1,shape[0],shape[1]))
+    img2 = img2.reshape((1,1,shape[0],shape[1]))
 
     # Create input tensor and compute output tensor
     tensor_in = torch.tensor( np.concatenate((img1,img2),axis=1) )

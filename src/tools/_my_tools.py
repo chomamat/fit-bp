@@ -43,38 +43,70 @@ def compare(i,X,y,res,folder=None, channels_last=True):
     else:
         showImgGC(str(i).zfill(2),X[i,0,:,:],y[i,0,:,:],res[i,0,:,:],X[i,1,:,:],folder=folder)
 
-def loadData(folder, typeF=None, channels_last=False):
-    X_train = np.load(folder+"X_train.npy")
-    y_train = np.load(folder+"y_train.npy")
-    X_test = np.load(folder+"X_test.npy")
-    y_test = np.load(folder+"y_test.npy")
+# =================================================================================================
 
-    if typeF is not None:
-        X_train = X_train.astype(typeF)
-        y_train = y_train.astype(typeF)
-        X_test = X_test.astype(typeF)
-        y_test = y_test.astype(typeF)
-        X_train /= 255
-        y_train /= 255
-        X_test /= 255
-        y_test /= 255
+# files expects a list of filenames
+def load(files, typeF=None, channels_last=False):
+    out = []
 
-    if channels_last is True:
-        X_train = X_train.swapaxes(1,3)
-        X_train = X_train.swapaxes(1,2)
-        X_test = X_test.swapaxes(1,3)
-        X_test = X_test.swapaxes(1,2)
+    for f in files:
+        print(f)
+        x = np.load(f)
 
-        y_train = np.expand_dims(y_train,3)
-        y_test = np.expand_dims(y_test,3)
-    else:
-        y_train = np.expand_dims(y_train, 1)
-        y_test = np.expand_dims(y_test, 1)
+        if typeF is not None:
+            x = x.astype(typeF)
+            x /= 255
 
-    return X_train, y_train, X_test, y_test
+        if channels_last is True:
+            x = x.swapaxes(1,3)
+            x = x.swapaxes(1,2)
+
+        out.append(x)
+
+    return out
+
+def loadData(folder, train=False, val=False, test=False, typeF=None, channels_last=False):
+    names = []
+
+    if train is True:
+        names.append(folder+"X_train.npy")
+        names.append(folder+"y_train.npy")
+
+    if val is True:
+        names.append(folder+"X_val.npy")
+        names.append(folder+"y_val.npy")
+
+    if test is True:        
+        names.append(folder+"X_test.npy")
+        names.append(folder+"y_test.npy")
+
+    return load(names, typeF=typeF, channels_last=channels_last)
+
+# Concatenate the datasets to create one dataset with dimensions [:,1,I,J], where (I,J) are image dimensions
+def loadDataByOne(folder, train=False, val=False, test=False, typeF=None, channels_last=False):
+    out = []
+
+    if train is True:
+        X_train, y_train = loadData(folder, train=True, typeF=typeF, channels_last=channels_last)
+        X_train = np.concatenate((X_train[:,0:1,:,:],X_train[:,1:2,:,:],y_train[:,0:1,:,:]),axis=0)
+        out.append(X_train)
+
+    if val is True:
+        X_val, y_val = loadData(folder, val=True, typeF=typeF, channels_last=channels_last)
+        X_val = np.concatenate((X_val[:,0:1,:,:],X_val[:,1:2,:,:],y_val[:,0:1,:,:]),axis=0)
+        out.append(X_val)
+
+    if test is True:
+        X_test, y_test = loadData(folder, test=True, typeF=typeF, channels_last=channels_last)
+        X_test = np.concatenate((X_test[:,0:1,:,:],X_test[:,1:2,:,:],y_test[:,0:1,:,:]),axis=0)
+        out.append(X_test)
+
+    return out
+
+# =================================================================================================
 
 def loadDataFloat(folder):
-    print("This is function is deprecated, replace it please.")
+    print("This is function is deprecated, replace it please with loadData().")
     X_train, y_train, X_test, y_test = loadData(folder)
     X_train = X_train.astype('float32')
     y_train = y_train.astype('float32')
