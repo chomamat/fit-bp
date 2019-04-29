@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision
 
 class VggLoss(nn.Module):
-    def __init__(self, vgg_factor):
+    def __init__(self, vgg_factor=0.00002):
         super(VggLoss, self).__init__()
 
         self.vgg_factor = vgg_factor
@@ -31,7 +31,7 @@ class VggLoss(nn.Module):
 
     # VGG19 works with 3 channels, but radar images are only grayscale.
     # It empirically looks to be OK, to just concatenate the image in the channels dimension.
-    def upChannel(x):
+    def upChannel(self,x):
         out = x
 
         while out.shape[1] < 3:
@@ -40,7 +40,7 @@ class VggLoss(nn.Module):
         return out
 
 class CombinedLoss(nn.Module):
-    def __init__(self, vgg_factor):
+    def __init__(self, vgg_factor=0.00002):
         super(CombinedLoss, self).__init__()
         self.vgg = VggLoss(vgg_factor)
         self.l1 = nn.L1Loss()

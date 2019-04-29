@@ -44,13 +44,13 @@ def cropFolder(in_f, out_f, size, stride):
 				crop_n = j*w_times+k
 				cv.imwrite(out_f+str(crop_n).zfill(2)+"/"+i, cropImg(img,x,y,(W,H)))
 		
-		print (i)
+		print (i+'\r',end='',flush=True)
 
 # Takes all images from folder in_f and removes images which have more than 95%
 # of the area without precipitation or have only precipitation level 1 of 16. Also,
 # removes previous images so that there are always left three consecutive images.
 # Function assumes that every image in in_f has the same size.
-def findTriplets(in_f):
+def findSequence(in_f, seq_length):
 	images = sorted(os.listdir(in_f))
 	# -----------------------------------------------------
 	tmp = cv.imread(in_f+images[0], cv.IMREAD_GRAYSCALE)
@@ -70,7 +70,7 @@ def findTriplets(in_f):
 			last = []
 		else:
 			last.append(images[i])
-			if len(last) == 3:
+			if len(last) == seq_length:
 				last = []
 	# -----------------------------------------------------
 	images = sorted(os.listdir(in_f))
@@ -88,6 +88,24 @@ def loadToNPA(in_f):
 		x = np.stack([img[0],img[2]],axis=0)
 		X.append(x)
 		y.append(img[1])
+
+	X = np.array(X)
+	y = np.array(y)
+
+	return X,y
+
+def loadSeqToNPA(in_f, pre, post):
+	X = []
+	y = []
+	# -----------------------------------------------------	
+	images = sorted(os.listdir(in_f))
+	
+	for i in range(0,len(images),pre+post):
+		img = [cv.imread(in_f+images[j],cv.IMREAD_GRAYSCALE) for j in range(i,i+pre+post)]
+		x_tmp = np.stack([i for i in img[0:pre]],axis=0)
+		y_tmp = np.stack([i for i in img[pre:pre+post]],axis=0)
+		X.append(x_tmp)
+		y.append(y_tmp)
 
 	X = np.array(X)
 	y = np.array(y)

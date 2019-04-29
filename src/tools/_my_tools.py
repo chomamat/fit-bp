@@ -22,7 +22,7 @@ def showImg(name,*img,folder=None):
         # res = (res * 255).astype('int')
         cv.imwrite(folder+name+".png",res)
 
-def showImgGC(name,*img,folder=None):
+def showImgGC(name,*img,folder=None,size=(30,30)):
     if len(img) == 0:
         return
     else:
@@ -30,7 +30,7 @@ def showImgGC(name,*img,folder=None):
         for i in img[1:]:
             res = np.concatenate((res,i),axis=1)
             
-    fig, ax = plt.subplots(figsize=(30,30))
+    fig, ax = plt.subplots(figsize=size)
     ax.grid(False)
     ax.imshow(res.squeeze(), cmap='binary_r')
     if folder is not None:
@@ -50,7 +50,7 @@ def load(files, typeF=None, channels_last=False):
     out = []
 
     for f in files:
-        print(f)
+        print("Loading",f)
         x = np.load(f)
 
         if typeF is not None:
@@ -87,18 +87,18 @@ def loadDataByOne(folder, train=False, val=False, test=False, typeF=None, channe
     out = []
 
     if train is True:
-        X_train, y_train = loadData(folder, train=True, typeF=typeF, channels_last=channels_last)
-        X_train = np.concatenate((X_train[:,0:1,:,:],X_train[:,1:2,:,:],y_train[:,0:1,:,:]),axis=0)
+        X_train = loadData(folder, train=True, typeF=typeF, channels_last=channels_last)[0]
+        X_train = X_train.reshape((-1,1,X_train.shape[2],X_train.shape[3]))
         out.append(X_train)
 
     if val is True:
-        X_val, y_val = loadData(folder, val=True, typeF=typeF, channels_last=channels_last)
-        X_val = np.concatenate((X_val[:,0:1,:,:],X_val[:,1:2,:,:],y_val[:,0:1,:,:]),axis=0)
+        X_val = loadData(folder, val=True, typeF=typeF, channels_last=channels_last)[0]
+        X_val = X_val.reshape((-1,1,X_val.shape[2],X_val.shape[3]))
         out.append(X_val)
 
     if test is True:
-        X_test, y_test = loadData(folder, test=True, typeF=typeF, channels_last=channels_last)
-        X_test = np.concatenate((X_test[:,0:1,:,:],X_test[:,1:2,:,:],y_test[:,0:1,:,:]),axis=0)
+        X_test = loadData(folder, test=True, typeF=typeF, channels_last=channels_last)[0]
+        X_test = X_test.reshape((-1,1,X_test.shape[2],X_test.shape[3]))
         out.append(X_test)
 
     return out
@@ -149,7 +149,10 @@ def fromCSV(file):
 
     return dict(d)
 
-def plotHistory(history) :
+def plotHistory(history, size=(10,10)) :
+    plt.figure(figsize=size)
+    plt.grid(True)
+
     for key, val in history.items():
         assert type(val) == list
         plt.plot(range(len(val)),val,label=key)
