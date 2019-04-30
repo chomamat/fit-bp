@@ -111,3 +111,16 @@ def loadSeqToNPA(in_f, pre, post):
 	y = np.array(y)
 
 	return X,y
+
+# l - list of file name prefixes
+def concatNPA(in_f, l, name_suf):
+	X = np.load(in_f+str(l[0])+name_suf)
+	# -------------------------------------------------------
+	for i in l[1:]:
+	    X_tmp = np.load(in_f+str(i)+name_suf)
+	    X = np.concatenate((X,X_tmp),axis=0)
+	    print (str(i)+'\r',end='',flush=True)
+	# -------------------------------------------------------
+	print("Final shape:",X.shape)
+
+	return X
