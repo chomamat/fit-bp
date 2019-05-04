@@ -157,4 +157,5 @@ def plotHistory(history, size=(10,10)) :
     for key, val in history.items():
         assert type(val) == list
         plt.plot(range(len(val)),val,label=key)
+    plt.legend(loc='upper right', prop={'size': 20})
     plt.show()

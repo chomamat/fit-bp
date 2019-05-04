@@ -11,18 +11,18 @@ class Training():
 
 		# Dataset as numpy array
 		self.setTrain(X,y)
-		print(1)
+
 		if X_val is not None:
 			self.setVal(X_val, y_val)
 		else:
 			self.X_val = None
 			self.y_val = None
-		print(2)
+
 
 		# Model stuff
 		self.model = model
 		self.device = device
-		print(3)
+
 		self.history = {
 			'train' : [],
 			'val' : []
@@ -31,14 +31,14 @@ class Training():
 		self.loss_function = loss_function
 		if self.loss_function is None:
 			self.loss_function = nn.L1Loss()
-		print(4)
+
 		self.optimizer = optimizer 		# improve -> pass optim to class and initialize inside
 		if self.optimizer is None:
 			self.optimizer = optim.Adamax(model.parameters())
-		print(5)
+
 		# Load model on GPU
 		self.model.to(self.device)
-		print(6)
+
 
 	# Returns batch as pytorch tensor on device.
 	def getBatch(self, offset, batch_size, val=False):
@@ -60,13 +60,14 @@ class Training():
 	def fit(self, batch_size, n_epochs, val=False):
 		
 		#Print all of the hyperparameters of the training iteration:
-		print("====== HYPERPARAMETERS ======")
-		print("batch_size :", batch_size)
-		print("epochs :", n_epochs)
-		print("loss function :", self.loss_function)
-		print("optimizer :", self.optimizer)
-		print("device :",self.device)
-		print("=" * 29)
+		# print("====== HYPERPARAMETERS ======")
+		# print("batch_size :", batch_size)
+		# print("epochs :", n_epochs)
+		# print("loss function :", self.loss_function)
+		# print("optimizer :", self.optimizer)
+		# print("device :",self.device)
+		# print("=" * 29)
+		print("\n\n====== TRAINING ======")
 		
 		n_batch = self.X.shape[0] // batch_size
 		
@@ -149,7 +150,6 @@ class Training():
 		assert X.shape[2:4] == y.shape[2:4]
 
 		self.X = X
-		input("Did it copy the dataset?")
 		self.y = y
 
 	def setVal(self, X_val, y_val):
