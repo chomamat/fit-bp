@@ -29,7 +29,8 @@ def showImgGC(name,*img,folder=None,size=(30,30)):
         res = img[0]
         for i in img[1:]:
             res = np.concatenate((res,i),axis=1)
-            
+    
+    res = res.astype('float32')
     fig, ax = plt.subplots(figsize=size)
     ax.grid(False)
     ax.imshow(res.squeeze(), cmap='binary_r')
