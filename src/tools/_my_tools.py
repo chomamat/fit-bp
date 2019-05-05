@@ -150,12 +150,16 @@ def fromCSV(file):
 
     return dict(d)
 
-def plotHistory(history, size=(10,10)) :
+def plotHistory(history, save=None, size=(10,10)) :
     plt.figure(figsize=size)
     plt.grid(True)
 
     for key, val in history.items():
         assert type(val) == list
         plt.plot(range(len(val)),val,label=key)
-    plt.legend(loc='upper right', prop={'size': 20})
-    plt.show()
+    plt.legend(loc='upper right')#, prop={'size': 24})
+
+    if save is not None:
+        plt.savefig(save)
+    else:
+        plt.show()
