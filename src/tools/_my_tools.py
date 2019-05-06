@@ -106,20 +106,6 @@ def loadDataByOne(folder, train=False, val=False, test=False, typeF=None, channe
 
 # =================================================================================================
 
-def loadDataFloat(folder):
-    print("This is function is deprecated, replace it please with loadData().")
-    X_train, y_train, X_test, y_test = loadData(folder)
-    X_train = X_train.astype('float32')
-    y_train = y_train.astype('float32')
-    X_test = X_test.astype('float32')
-    y_test = y_test.astype('float32')
-    X_train /= 255
-    y_train /= 255
-    X_test /= 255
-    y_test /= 255
-
-    return X_train, y_train, X_test, y_test
-
 def postProcess(X, channels, bound=1):
     c = channels - 1
     if bound != 1:
@@ -136,12 +122,17 @@ def splitX(X):
     X_2 = np.squeeze(X[:,1,:,:])
     return X_1, X_2
 
+""" Awaits dictionary of lists on the input.
+    Saves it as a .CSV file.
+"""
 def toCSV(file, d):
     with open(file, 'w') as f:
         w = csv.writer(f)
         w.writerow(d.keys())
         w.writerows(zip(*d.values()))
 
+""" Reads a .CSV file and returns dictionary of lists.
+"""
 def fromCSV(file):
     d = defaultdict(list)
     for record in csv.DictReader(open(file)):
@@ -150,13 +141,15 @@ def fromCSV(file):
 
     return dict(d)
 
+""" Plots a graph of dictionary of lists.
+"""
 def plotHistory(history, save=None, size=(10,10)) :
     plt.figure(figsize=size)
     plt.grid(True)
 
     for key, val in history.items():
         assert type(val) == list
-        plt.plot(range(len(val)),val,label=key)
+        plt.plot(range(1,len(val)+1),val,label=key)
     plt.legend(loc='upper right')#, prop={'size': 24})
 
     if save is not None:
