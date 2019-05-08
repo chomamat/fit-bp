@@ -72,7 +72,7 @@ class Training():
         
         start_T = int(time.time())
         
-        for epoch in range(save_off,n_epochs+save_off):
+        for epoch in range(save_off+1,n_epochs+save_off+1):
             print("===> Epoch[{}]".format(epoch), end='', flush=True)
             epoch_T = time.time()
             epoch_loss = 0
@@ -105,7 +105,7 @@ class Training():
             
             # If save argument is defined, save the weights after each epoch
             if save is not None:
-                self.save(save+"weights"+str(save_off+epoch).zfill(2)+".pth")
+                self.save(save+"weights"+str(epoch).zfill(2)+".pth")
             
             print("\nEpoch[{}] finished in {} with loss {}".format(epoch, self.formatTime(tick_T - epoch_T), epoch_loss))
             
