@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
 import torchvision
+from skimage.measure import compare_ssim as ssim
+import numpy as np
 
 class VggLoss(nn.Module):
-    def __init__(self, vgg_factor=0.00002):
+    def __init__(self, output_layer=-10, vgg_factor=0.00002):
         super(VggLoss, self).__init__()
 
         self.vgg_factor = vgg_factor
@@ -11,7 +13,7 @@ class VggLoss(nn.Module):
 
         self.features = nn.Sequential(
             # stop at relu4_4 [:-10]
-            *list(model.features.children())[:-10]
+            *list(model.features.children())[:output_layer]
         )
 
         for param in self.features.parameters():
@@ -39,10 +41,28 @@ class VggLoss(nn.Module):
 
         return out
 
+class SSIMLoss(nn.Module):
+    def __init__(self):
+        super(SSIMLoss, self).__init__()
+
+    def forward(self, output, target) -> torch.Tensor:
+        assert output.shape[0] == target.shape[0] == 1
+        assert output.shape == target.shape
+        def_shape = output.shape
+        
+        O = output.view(def_shape[2],def_shape[3],-1).cpu().detach().numpy()
+        T = target.view(def_shape[2],def_shape[3],-1).cpu().detach().numpy()
+        
+        if output.shape[1] == 3:
+            multichannel=False
+            return ssim(O, T, multichannel=True)
+        else:
+            return ssim(np.squeeze(O), np.squeeze(T))
+    
 class CombinedLoss(nn.Module):
-    def __init__(self, vgg_factor=0.00002):
+    def __init__(self, vgg_layer=-18, vgg_factor=0.00002):
         super(CombinedLoss, self).__init__()
-        self.vgg = VggLoss(vgg_factor)
+        self.vgg = VggLoss(vgg_layer, vgg_factor)
         self.l1 = nn.L1Loss()
 
     def forward(self, output, target) -> torch.Tensor:

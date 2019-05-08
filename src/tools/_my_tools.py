@@ -33,7 +33,7 @@ def showImgGC(name,*img,folder=None,size=(30,30)):
     res = res.astype('float32')
     fig, ax = plt.subplots(figsize=size)
     ax.grid(False)
-    ax.imshow(res.squeeze(), cmap='binary_r')
+    ax.imshow(res.squeeze(), cmap=plt.cm.gray, vmin=0, vmax=1)
     if folder is not None:
         res = (res * 255).astype('int')
         cv.imwrite(folder+name+".png",res)
@@ -137,7 +137,10 @@ def fromCSV(file):
     d = defaultdict(list)
     for record in csv.DictReader(open(file)):
         for key, val in record.items():
-            d[key].append(float(val))
+            try:
+                d[key].append(float(val))
+            except:
+                d[key].append(val)
 
     return dict(d)
 
