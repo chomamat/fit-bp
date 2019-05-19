@@ -1,0 +1,29 @@
+### Notes for BI-DPR presentation of my thesis
+And it will be in slovak.
+
+- Aká je téma, čo je to nowcasting + trochu motivácie.
+	- v bakalárskej práci som sa zaoberal interpoláciou -- počítaním snímok medzi a extrapoláciou -- počítaním budúcich snímok nejakej sekencie.
+- Spomeň ciele.
+	- Vyskúšať použitie konceptov strojového učenia na interpoláciu a extrapoláciu sekvencie snímok.
+	- Vybral, pretože rád behám po kopcoch, no letné búrky sú veľmi obmedzujúce. Jedného dňa, práca podobná tejto mojej sa bude dať použiť na to, aby vám prišlo upozornenie na telefón, že tu bude pršať.
+- Ako vznikajú radarové snímky, frekvencia, rozmery, čo farby znázorňujú.
+	- Vznikajú odrazom elektromagnetického vlnenia od kvapiek. Radar meria tieto odrazy a na základe sily určuje intenzitu zrážok v danom mieste.
+	- Intenzita je zredukovaná na 16 diskrétnych hodnôt, namapovaných na túto škálu.
+- Vytvorenie datasetu, 2mono, crop, rotate, findTriplets, split
+	- Neurónové siete, ktoré budem používať sú matematické modely, ktoré sa učia čo najlepšie popísať dáta v nejakom datasete.
+	- Dal som do čiernobiela, vyrezal som štvorce o veľkosti 96x96, odstránil som snímky, ktoré neobsahovali zrážky a následne som ich ešte zrotoval, aby bol pohy do každého smeru zastúpený čo najrovnakejším dielom.
+- Architektúra konvolučnej siete + trénovanie
+	- Na riešenie týchto problémov som použil hlbokú konvolučnú neurónovú sieť, ktorá ako vstup berie 2 respektíve 3 za sebou idúce snímky a výstupom je vždy 1 snímka - snímka medzi, alebo snímka o 1 ďalej.
+- Ukázanie snímok, porovnanie s metódou COTREC bude až v budúcnosti.
+- GIF???
+
+
+582 * 296
+
+### Le Text
+Dobrý deň, moje meno je Matej Choma a téma mojej bakalárskej práce je Interpolation and Extrapolation of Subsequent Weather Radar Images. Túto prácu robím na Katedre Aplikovanej Matematiky pod vedením Ing. Jakuba Bartela zo spoločnosti Meteopress, ktorá sa zaoberá predpoveďou počasia. V práci sa zaoberám riešením dvoch problémov spracovávania sekvencie radarových snímok. Prvým je interpolácia, teda odhadovanie snímok v polovici periódy medzi dvomi vstupnými snímkami. Druhým problémom je extrapolácia -- zo sekvencie snímok predikovať tie v budúcnosti.
+
+Cieľom bakalárskej práce je vyskúšať strojové účenie.
+
+Radarové snímky
+

@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import csv
 
 # files expects a list of filenames
 def load(files, typeF=None, channels_last=False):

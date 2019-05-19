@@ -148,9 +148,7 @@ def interpolate(arg_frame1, arg_frame2, arg_out):
 # Create model for interpolation
 model = Model(arg_weights).to(device).eval()
 
-#############
-# requires grad = False???
-#############
+#######################################
 
 if __name__ == '__main__':
     interpolate(arg_frame1, arg_frame2, arg_out)
